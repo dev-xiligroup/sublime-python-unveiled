@@ -9,13 +9,21 @@ this example contains a new class (in modules) to provide more methods to sublim
 import imp
 import sublime
 import sublime_plugin
-import os.path
+# import os.path
 
-import RegionMore.modules.xili_mod_regionmore_class
-imp.reload( RegionMore.modules.xili_mod_regionmore_class ) # for dev
+import RegionMore.modules.xili_mod_buffermore_class
+imp.reload( RegionMore.modules.xili_mod_buffermore_class ) # for dev
+from RegionMore.modules.xili_mod_buffermore_class import BufferMore # the new sub class
+
+# after buffer !! see when Region Buffer is instantiated
+import RegionMore.modules.xili_mod_regionmore_class as rm
+imp.reload( rm ) # for dev
 from RegionMore.modules.xili_mod_regionmore_class import RegionMore # the new sub class
 
 class TestRegionMoreCommand(sublime_plugin.TextCommand):
+
+    """to test classes
+    """
 
     def run(self, edit, **args):
 
@@ -80,7 +88,7 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
             len_vn += MyBuffer1.insert(edit,len_vn, self.view.substr(region_test))
             pos_b = len_vn
             # search inside buffer
-            Region_Buffer = RegionMore(MyBuffer1.id()) # only in inserted part
+            Region_Buffer = RegionMore(MyBuffer1.id()) # only in inserted part !
             Region_Buffer.set(pos_a, pos_b)
             print('match in more ',Region_Buffer.findall(r'get_.+?_mod', 0 ))
 
@@ -118,47 +126,5 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
         print('----> ',BufferMore.nameis( ' is good' ))
         print('--inst--> ',MyBuffer1.name )
         print('--class--> ',BufferMore.name )
-        MyBuffer2 = MyBuffer1.new_buffer(self.view)
-
-class BufferMore(sublime.View):
-    name = "BufferMore"
-
-    @classmethod
-    def nameis(cls, iis):
-        # cls.name = "bernard"
-        print('set is', cls.name, iis)
-        return 'inside ', cls.name
-
-    def set(self, bufargs):
-        self.name = "michel"
-        print('set ',self.name)
-        self.path = bufargs['path']
-        self.subpath = bufargs['subpath']
-        self.filename = bufargs['filename']
-        self.file_extension = bufargs['file_extension']
-        self.thew = self.window()
-        thew_vars = self.thew.extract_variables()
-        print(' Buffer win ',thew_vars, 'sep ',str(os.path.sep))
-        ll = []
-        if not isinstance(self.subpath, list):
-            self.subpath = [self.subpath]
-        ll.extend(self.subpath) # add a list
-        ll.append(self.filename + '.' + self.file_extension) # add one element
-        subpath_file = os.path.sep.join(tuple(ll)) # only tuple !
-        self.file = os.path.join(self.path,subpath_file) # parameter and not list
-        print(' Buffer file ', self.file)
-    @classmethod # @staticmethod
-    def new_buffer(cls, view):
-        if not cls.name == "BufferMore":
-            raise "method new_buffer cannot be used with instantiated"
-        viewnew = view.window().new_file()
-        buff = BufferMore(viewnew.id()) # a way to create a buffer with newfile view.id
-        #now an objet
-        cls.name = buff.id()
-        print(cls.name,buff.id())
-        return buff
-    # save if object instantiated
-    def save(self):
-        os.makedirs(os.path.join(self.path, str(os.path.sep).join(tuple(self.subpath))), exist_ok=True)
-        self.retarget(self.file)
-        self.run_command('save')
+        # MyBuffer2 = MyBuffer1.new_buffer(self.view) => error because impossible instantiated class
+        # print(MyBuffer2)
