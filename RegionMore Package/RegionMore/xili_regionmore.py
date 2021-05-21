@@ -55,7 +55,7 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
 
         #print(' new win ', thd)
         #print(' new win ', viewn.id())
-
+        print('--before inst. class--> ',BufferMore.name )
         MyBuffer1 = BufferMore.new_buffer(self.view) # not yet class like object but return an object
         thd = MyBuffer1.window().extract_variables()
         print(' new win not saved ', thd)
@@ -63,9 +63,9 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
             "path":thd['packages'],
             "subpath":['User','testbuff'], # or not list
             "filename":'filebuff',
-            'file_extension': fext # same as target file
+            'file_extension': fext # same as target file/view
         }
-        MyBuffer1.set(buf_args)
+        MyBuffer1.set(buf_args) # where the buffer will be saved !
         # header of buffer
         if fext == 'php':
             len_vn = MyBuffer1.insert(edit,0,'<?php\nfunction too () {\n\t $ = 0;\n}\n')
@@ -122,9 +122,38 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
         #MyBuffer = BufferMore(viewn.id())
 
         sublime.active_window().focus_view(self.view) # not documented ! back to target file
+        """
         print (self.view.style_for_scope('meta.function'))
         print('----> ',BufferMore.nameis( ' is good' ))
         print('--inst--> ',MyBuffer1.name )
         print('--class--> ',BufferMore.name )
-        # MyBuffer2 = MyBuffer1.new_buffer(self.view) => error because impossible instantiated class
+
         # print(MyBuffer2)
+        #MyBuffer2 = BufferMore.new_buffer(self.view)
+        """
+        #MyBuffer2 = MyBuffer1.new_buffer(self.view) # => error because impossible instantiated class
+
+class DevRefreshListener(sublime_plugin.EventListener):
+
+    """ specific event for this plugin in dev
+    """
+
+    def on_post_save(self, view):
+        """tests if one of the files of plugin was saved !
+        """
+        in_dev_step = 'RegionMore' in view.settings().get('development') # in current user's preferences
+        # print("Before test...")
+        # the catalog of the plugin's modules
+        plugin_files = [
+
+            "modules/xili_mod_regionmore_class.py",
+            "modules/xili_mod_buffermore_class.py",
+
+        ]
+        if in_dev_step and view.file_name().endswith(".py"):
+            for plugin_file in plugin_files:
+                if view.file_name().endswith(plugin_file):
+                    print("After saving this file (view): ", view.file_name())
+                    sublime_plugin.reload_plugin('RegionMore.xili_regionmore') # the root of this plugin
+
+    # end

@@ -17,7 +17,7 @@ class BufferMore(sublime.View):
         thew (TYPE): Description
     """
 
-    name = "BufferMore"
+    name = "BufferMore" # can be modified by instantiation !
 
     @classmethod
     def nameis(cls, iis):
@@ -68,14 +68,13 @@ class BufferMore(sublime.View):
         Raises:
             "BufferMore: Description
         """
+        #print(isinstance(cls, BufferMore))
         print('cls name ', cls.name)
-        if cls.name != "BufferMore":
-            raise "BufferMore : method new_buffer cannot be used with instantiated class"
+        #if cls.name != "BufferMore":
+            #raise "BufferMore : method new_buffer cannot be used with instantiated class"
         viewnew = view.window().new_file()
         buff = BufferMore(viewnew.id()) # a way to create a buffer with newfile view.id
-        #now an objet
-        cls.name = buff.id()
-        print(cls.name,buff.id())
+        #now an objet returned
         return buff
     # save if object instantiated
 
