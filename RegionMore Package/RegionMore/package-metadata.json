@@ -1,0 +1,1 @@
+{"platforms": ["*"], "url": "https://github.com/dev-xiligroup/sublime-python-unveiled", "version": "0.2.0", "sublime_text": ">=3000", "dependencies": [], "description": "Exercises and tests about python in sublime text about class, selector, scope, region, view and more."}
