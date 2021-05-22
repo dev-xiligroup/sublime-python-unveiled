@@ -56,7 +56,8 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
         #print(' new win ', thd)
         #print(' new win ', viewn.id())
         print('--before inst. class--> ',BufferMore.name )
-        MyBuffer1 = BufferMore.new_buffer(self.view) # not yet class like object but return an object
+        #MyBuffer1 = BufferMore.new_buffer(self.view) # not yet class like object but return an object
+        MyBuffer1 = BufferMore( -1, self.view ) # new instantiation
         thd = MyBuffer1.window().extract_variables()
         print(' new win not saved ', thd)
         buf_args = {
@@ -100,7 +101,7 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
         MyBuffer1.save()
         thd = MyBuffer1.window().extract_variables()
         print(' new win saved ', thd)
-        print(' new win ', MyBuffer1.id())
+        print(' new buffer id ', MyBuffer1.id())
         if not MyBuffer1.is_loading():
             print('try close')
             if 'close' in args and args['close'] is True:
@@ -122,6 +123,18 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
         #MyBuffer = BufferMore(viewn.id())
 
         sublime.active_window().focus_view(self.view) # not documented ! back to target file
+        print('--inst--> ',MyBuffer1.view_id ) # as id()
+        print(BufferMore.buffers)
+        collection = BufferMore.buffermores()
+        ids = []
+        for viewobj in collection:
+            ids.append(viewobj.id())
+        print(ids)
+        #del MyBuffer1
+        #print(BufferMore.buffers)
+        #print(BufferMore.buffermores())
+        print(self.view.window().views())
+        #print('region ', Region_Buffer.string())
         """
         print (self.view.style_for_scope('meta.function'))
         print('----> ',BufferMore.nameis( ' is good' ))

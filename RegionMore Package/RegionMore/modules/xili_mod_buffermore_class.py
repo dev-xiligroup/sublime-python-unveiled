@@ -5,7 +5,7 @@ import sublime
 
 class BufferMore(sublime.View):
 
-    """ a view/buffer used for searching !!
+    """a view/buffer used for searching !!
 
     Attributes:
         file (TYPE): Description
@@ -15,9 +15,35 @@ class BufferMore(sublime.View):
         path (TYPE): Description
         subpath (TYPE): Description
         thew (TYPE): Description
+        view_id (TYPE): Description
     """
 
     name = "BufferMore" # can be modified by instantiation !
+    buffers = []
+
+    def __init__(self, view_id, view):
+        """ init contains a way to increment unique ID
+        Args:
+            view_id (int): Not used
+            view (view): of current view (self.view in container's context)
+        print('init PE): Description
+        """
+        viewtemp = view.window().new_file() # create an empty view but with good ID
+        self.view_id = viewtemp.id() # self.view is used by method id
+        self.buffers.append(self.view_id) # before above line to avoid erasing
+        self = viewtemp
+
+    def __del__(self):
+        print("BufferMore ",self.view_id," deleted")
+        self.buffers.remove(self.view_id)
+
+    @classmethod
+    def buffermores(cls):
+        #if cls.buffers:
+        buffer_views=[]
+        for buffer_id in cls.buffers:
+            buffer_views.append(sublime.View(buffer_id))
+        return buffer_views
 
     @classmethod
     def nameis(cls, iis):
@@ -43,9 +69,9 @@ class BufferMore(sublime.View):
         self.subpath = bufargs['subpath']
         self.filename = bufargs['filename']
         self.file_extension = bufargs['file_extension']
-        self.thew = self.window()
-        thew_vars = self.thew.extract_variables()
-        print(' Buffer win ',thew_vars, 'sep ',str(os.path.sep))
+        # self.thew = self.window()
+        # thew_vars = self.thew.extract_variables()
+        # print(' Buffer win ',thew_vars, 'sep ',str(os.path.sep))
         ll = []
         if not isinstance(self.subpath, list):
             self.subpath = [self.subpath]
@@ -55,31 +81,30 @@ class BufferMore(sublime.View):
         self.file = os.path.join(self.path,subpath_file) # parameter and not list
         print(' Buffer file ', self.file)
 
+    """
     @classmethod # @staticmethod
     def new_buffer(cls, view):
-        """Summary
+        Summary
 
         Args:
-            view (TYPE): Description
+            view (view): The view from where called
 
         Returns:
-            TYPE: Description
+            BufferMore: instantiated
 
-        Raises:
-            "BufferMore: Description
-        """
+
         #print(isinstance(cls, BufferMore))
         print('cls name ', cls.name)
-        #if cls.name != "BufferMore":
-            #raise "BufferMore : method new_buffer cannot be used with instantiated class"
+
         viewnew = view.window().new_file()
         buff = BufferMore(viewnew.id()) # a way to create a buffer with newfile view.id
         #now an objet returned
         return buff
+    """
     # save if object instantiated
 
     def save(self):
-        """Summary
+        """ The working buffer is saved somewhere (see set)
         """
         os.makedirs(os.path.join(self.path, str(os.path.sep).join(tuple(self.subpath))), exist_ok=True)
         self.retarget(self.file)

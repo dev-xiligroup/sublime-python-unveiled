@@ -5,13 +5,26 @@ import sublime
 # import sublime_plugin
 
 class RegionMore(sublime.View, sublime.Region):
-    """ View before Region (with these attributes)
+    """View before Region (with these attributes)
         when instantiate, provides one id of the target view where region is !!!
 
     Attributes:
         a (TYPE): Description
         b (TYPE): Description
     """
+    def __init__(self, view_id, *positions):
+        """Summary
+
+        Args:
+            view_id (integer): id f associated view
+            *positions: tuple a et b positions
+        """
+        self.view_id = view_id # mandatory if instatiante via __init__ in subclass
+        self.a = 0
+        self.b = 0
+        if positions and len(positions) == 2: # need a tuple of two elements
+            self.a = positions[0]
+            self.b = positions[1]
 
     def set(self, a, b):
         """Summary
@@ -22,6 +35,9 @@ class RegionMore(sublime.View, sublime.Region):
         """
         self.a = a
         self.b = b
+
+    def __del__(self):
+        print("RegionMore ",self.view_id," deleted")
 
     def display(self):
         """Summary
