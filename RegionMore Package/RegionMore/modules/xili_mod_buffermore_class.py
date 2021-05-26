@@ -8,14 +8,15 @@ class BufferMore(sublime.View):
     """a view/buffer used for searching !!
 
     Attributes:
-        file (TYPE): Description
-        file_extension (TYPE): Description
-        filename (TYPE): Description
+        buffers (list): Catalog of instantiate objets
+        file (str): full path of file linked to buffer
+        file_extension (str): Extension
+        filename (str): Description
         name (str): Description
-        path (TYPE): Description
-        subpath (TYPE): Description
-        thew (TYPE): Description
-        view_id (TYPE): Description
+        path (str): Root of the path
+        subpath (str or list): One or more subpath
+        view_id (int): Id of linked view
+
     """
 
     name = "BufferMore" # can be modified by instantiation !
@@ -39,6 +40,11 @@ class BufferMore(sublime.View):
 
     @classmethod
     def buffermores(cls):
+        """Set a list of buffer object
+
+        Returns:
+            list: of view object
+        """
         #if cls.buffers:
         buffer_views=[]
         for buffer_id in cls.buffers:
@@ -63,7 +69,7 @@ class BufferMore(sublime.View):
         """Summary
 
         Args:
-            bufargs (TYPE): Description
+            bufargs (dict): Description
         """
         self.path = bufargs['path']
         self.subpath = bufargs['subpath']
@@ -81,26 +87,6 @@ class BufferMore(sublime.View):
         self.file = os.path.join(self.path,subpath_file) # parameter and not list
         print(' Buffer file ', self.file)
 
-    """
-    @classmethod # @staticmethod
-    def new_buffer(cls, view):
-        Summary
-
-        Args:
-            view (view): The view from where called
-
-        Returns:
-            BufferMore: instantiated
-
-
-        #print(isinstance(cls, BufferMore))
-        print('cls name ', cls.name)
-
-        viewnew = view.window().new_file()
-        buff = BufferMore(viewnew.id()) # a way to create a buffer with newfile view.id
-        #now an objet returned
-        return buff
-    """
     # save if object instantiated
 
     def save(self):

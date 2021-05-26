@@ -2,6 +2,8 @@
 this example contains a new class (in modules) to provide more methods to sublime.Region with only few methods
 
 # v 210521 - first public dev release
+# v 210523 - new __init__ in the two classes (buffer and regionMore)
+# v 210525 - more comments
 
 """
 # import re
@@ -10,15 +12,13 @@ import imp
 import sublime
 import sublime_plugin
 # import os.path
-
 import RegionMore.modules.xili_mod_buffermore_class
-imp.reload( RegionMore.modules.xili_mod_buffermore_class ) # for dev
 from RegionMore.modules.xili_mod_buffermore_class import BufferMore # the new sub class
-
+imp.reload( RegionMore.modules.xili_mod_buffermore_class ) # for dev
 # after buffer !! see when Region Buffer is instantiated
 import RegionMore.modules.xili_mod_regionmore_class as rm
-imp.reload( rm ) # for dev
 from RegionMore.modules.xili_mod_regionmore_class import RegionMore # the new sub class
+imp.reload( rm ) # for dev
 
 class TestRegionMoreCommand(sublime_plugin.TextCommand):
 
@@ -35,6 +35,10 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
         print(moreregion.string())
         print(moreregion.search(r'scripts'))
         print(moreregion.findall(r'scripts'))
+
+        Args:
+            edit (edit): Description
+            **args: Description
         """
         thew = self.view.window()
         thew_vars = thew.extract_variables()
@@ -79,7 +83,8 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
             len_vn = MyBuffer1.insert(edit,0,'"""below - part inserted for RegionMore"""\n')
             selector_test = "comment"
             indice = 0
-        region = self.view.find_by_selector(selector_test) # only list of function...
+        # start search
+        region = self.view.find_by_selector(selector_test) # only list of function or comment
         if not isinstance(region, list):
             region = [region]
             # test on 2
@@ -88,9 +93,12 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
             pos_a = len_vn
             len_vn += MyBuffer1.insert(edit,len_vn, self.view.substr(region_test))
             pos_b = len_vn
-            # search inside buffer
-            Region_Buffer = RegionMore(MyBuffer1.id()) # only in inserted part !
+            # search inside created buffer
+            Region_Buffer = RegionMore(MyBuffer1.id()) # by default a, b = 0
             Region_Buffer.set(pos_a, pos_b)
+            # can be replace with unique line
+            # Region_Buffer = RegionMore(MyBuffer1.id(), pos_a, pos_b)
+
             print('match in more ',Region_Buffer.findall(r'get_.+?_mod', 0 ))
 
             result = Region_Buffer.more_finditer(r'\$content_width', 0)
@@ -104,11 +112,11 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
         print(' new buffer id ', MyBuffer1.id())
         if not MyBuffer1.is_loading():
             print('try close')
-            if 'close' in args and args['close'] is True:
+            if 'close' in args and args['close'] is True: # set in command
                 MyBuffer1.close() # undocumented why this not work -> run_command('close_file')
         print(' active view ', thew.active_view().id())
 
-        # select in original
+        # select and colorize in original
         if isinstance(region_test, sublime.Region) and result:
             region_selected = []
             for one_result in result:
@@ -120,9 +128,9 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
             # shows in color !
             self.view.add_regions("test", region_selected, "region.greenish", "circle",
             flags=sublime.DRAW_EMPTY | sublime.DRAW_NO_FILL)
-        #MyBuffer = BufferMore(viewn.id())
-
         sublime.active_window().focus_view(self.view) # not documented ! back to target file
+
+        # some tests
         print('--inst--> ',MyBuffer1.view_id ) # as id()
         print(BufferMore.buffers)
         collection = BufferMore.buffermores()
@@ -130,21 +138,41 @@ class TestRegionMoreCommand(sublime_plugin.TextCommand):
         for viewobj in collection:
             ids.append(viewobj.id())
         print(ids)
-        #del MyBuffer1
-        #print(BufferMore.buffers)
-        #print(BufferMore.buffermores())
-        print(self.view.window().views())
-        #print('region ', Region_Buffer.string())
-        """
-        print (self.view.style_for_scope('meta.function'))
-        print('----> ',BufferMore.nameis( ' is good' ))
-        print('--inst--> ',MyBuffer1.name )
-        print('--class--> ',BufferMore.name )
+        del MyBuffer1
+        print(BufferMore.buffers)
+        print(BufferMore.buffermores())
 
-        # print(MyBuffer2)
-        #MyBuffer2 = BufferMore.new_buffer(self.view)
+        print(self.view.window().views())
+
+
+class ClipRegionMoreCommand(sublime_plugin.TextCommand):
+    """to test class get clipboard in BufferMore for search (key ctrl+&)
+    """
+
+    def run(self, edit, **args):
+        """Summary
+
+        Args:
+            edit (TYPE): Description
+            **args: Description
         """
-        #MyBuffer2 = MyBuffer1.new_buffer(self.view) # => error because impossible instantiated class
+        MyBuffer1 = BufferMore( -1, self.view )
+        thd = MyBuffer1.window().extract_variables()
+        buf_args = {
+            "path":thd['packages'],
+            "subpath":['User','testbuff'], # or not list
+            "filename":'fileclip',
+            'file_extension': 'php' # to test
+        }
+        MyBuffer1.set(buf_args) # where the buffer will be saved !
+        len_vn = MyBuffer1.insert(edit,0,'<?php\n# below a copy of clipboard\n')
+        pos_a = len_vn
+        len_vn += MyBuffer1.insert(edit,len_vn, sublime.get_clipboard())
+        pos_b = len_vn
+
+        MyBuffer1.save()
+
+        # print(sublime.installed_packages_path())
 
 class DevRefreshListener(sublime_plugin.EventListener):
 

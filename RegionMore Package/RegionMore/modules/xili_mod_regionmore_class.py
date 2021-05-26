@@ -2,15 +2,15 @@
 """
 import re
 import sublime
-# import sublime_plugin
 
 class RegionMore(sublime.View, sublime.Region):
     """View before Region (with these attributes)
         when instantiate, provides one id of the target view where region is !!!
 
     Attributes:
-        a (TYPE): Description
-        b (TYPE): Description
+        a (int): Description as in Region
+        b (int): Description as in Region
+        view_id (int): Description as in View
     """
     def __init__(self, view_id, *positions):
         """Summary
@@ -27,11 +27,11 @@ class RegionMore(sublime.View, sublime.Region):
             self.b = positions[1]
 
     def set(self, a, b):
-        """Summary
+        """ to change a & b
 
         Args:
-            a (TYPE): Description
-            b (TYPE): Description
+            a (int): Description
+            b (int): Description
         """
         self.a = a
         self.b = b
@@ -64,8 +64,7 @@ class RegionMore(sublime.View, sublime.Region):
         match = re.search(pattern,self.substr(sublime.Region(self.a, self.b)), flags )
         if match:
             return match.group(0)
-        else:
-            return False
+        return False
 
     def findall(self, pattern, flags=0): # not find_all in view class
         """ don't confuse with find_all of view class
@@ -80,8 +79,7 @@ class RegionMore(sublime.View, sublime.Region):
         match = re.findall(pattern,self.substr(sublime.Region(self.a, self.b)), flags )
         if match:
             return match
-        else:
-            return False
+        return False
 
     def more_finditer(self, pattern, flags=0):
         """ better than find_all
